@@ -274,16 +274,27 @@ local function updatePlayerList()
     end
 end
 
--- Função para teleportar para o jogador
+--- Função para teleportar para o jogador
 local function teleportToPlayer(playerName)
     local player = game.Players:FindFirstChild(playerName)
     if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
         local character = game.Players.LocalPlayer.Character
         if character and character:FindFirstChild("HumanoidRootPart") then
+            -- Move o HumanoidRootPart do jogador local para a posição do HumanoidRootPart do jogador alvo
             character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame
+        else
+            warn("HumanoidRootPart not found in LocalPlayer's character")
         end
+    else
+        warn("Target player or HumanoidRootPart not found")
     end
 end
+
+-- Atualiza a lista de jogadores e a visibilidade
+teleportButton.MouseButton1Click:Connect(function()
+    playerListFrame.Visible = not playerListFrame.Visible
+    updatePlayerList()
+end)
 
 teleportButton.MouseButton1Click:Connect(function()
     playerListFrame.Visible = not playerListFrame.Visible
