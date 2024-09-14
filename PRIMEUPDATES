@@ -1,25 +1,29 @@
--- Criação do ScreenGui
+-- Criação do ScreenGui e Frame para o menu
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "MenuGui"
 screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Criação do Frame do menu
-local menuFrame = Instance.new("Frame")
-menuFrame.Size = UDim2.new(0, 300, 0, 600) -- Ajustado para tamanho fixo
-menuFrame.Position = UDim2.new(0.5, -150, 0.5, -300)
+-- Criação do menu principal
+local menuFrame = Instance.new("ScrollingFrame")
+menuFrame.Size = UDim2.new(0, 300, 0, 550)
+menuFrame.Position = UDim2.new(0.5, -150, 0.5, -275)
 menuFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+menuFrame.BorderSizePixel = 0
+menuFrame.ScrollBarThickness = 8
+menuFrame.Visible = false
 menuFrame.Parent = screenGui
 
--- Criação do título fixo do menu
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 50)
-title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-title.Text = "PRIME CHEAT"
-title.TextColor3 = Color3.fromRGB(255, 255, 255) -- Inicialmente branco
-title.TextScaled = true
-title.TextStrokeTransparency = 0.5
-title.TextSize = 24
-title.Parent = menuFrame
+-- Criação do título "PRIME CHEATS" como marca d'água
+local watermark = Instance.new("TextLabel")
+watermark.Size = UDim2.new(0, 200, 0, 50)
+watermark.Position = UDim2.new(0, 10, 0, 10)
+watermark.BackgroundTransparency = 1
+watermark.Text = "PRIME CHEATS"
+watermark.TextColor3 = Color3.fromRGB(255, 255, 255)
+watermark.TextScaled = true
+watermark.TextStrokeTransparency = 0.5
+watermark.TextSize = 24
+watermark.Parent = screenGui
 
 -- Função para gerar uma cor RGB viva aleatória
 local function getRandomColor()
@@ -27,42 +31,77 @@ local function getRandomColor()
 end
 
 -- Função para atualizar a cor do texto com efeito RGB
-local function updateTextColor()
+local function updateWatermarkColor()
     while true do
-        title.TextColor3 = getRandomColor()
+        watermark.TextColor3 = getRandomColor()
         wait(0.2) -- Ajuste o intervalo para a velocidade do efeito RGB
     end
 end
 
--- Inicia a atualização da cor do texto
-coroutine.wrap(updateTextColor)()
+-- Inicia a atualização da cor do texto da marca d'água
+coroutine.wrap(updateWatermarkColor)()
 
--- Criação do botão de abrir/fechar o menu
+-- Criação do botão "Prime" para abrir/fechar o menu
 local primeButton = Instance.new("TextButton")
 primeButton.Size = UDim2.new(0, 100, 0, 50)
-primeButton.Position = UDim2.new(0.5, -50, 0, 10) -- Ajustado para o canto superior direito
+primeButton.Position = UDim2.new(1, -110, 0, 10)
 primeButton.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
 primeButton.Text = "Prime"
 primeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 primeButton.TextScaled = true
 primeButton.TextStrokeTransparency = 0.5
-primeButton.ZIndex = 10 -- Aumentado o ZIndex para garantir que apareça acima de outros elementos
+primeButton.ZIndex = 10
 primeButton.Parent = screenGui
 
 -- Função para alternar a visibilidade do menu
-local menuVisible = false
 local function toggleMenu()
     menuFrame.Visible = not menuFrame.Visible
-    menuVisible = not menuVisible
 end
 
--- Conecta a função ao botão de abrir/fechar o menu
+-- Conecta a função ao botão "Prime"
 primeButton.MouseButton1Click:Connect(toggleMenu)
 
--- Criação do botão para o Toggle do ESP
+-- Adiciona a funcionalidade de arrastar o botão "Prime"
+local draggingEnabled = false
+local dragStartPos = nil
+local buttonStartPos = nil
+
+local function updatePosition(input)
+    local delta = input.Position - dragStartPos
+    primeButton.Position = UDim2.new(
+        buttonStartPos.X.Scale,
+        buttonStartPos.X.Offset + delta.X,
+        buttonStartPos.Y.Scale,
+        buttonStartPos.Y.Offset + delta.Y
+    )
+end
+
+primeButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        draggingEnabled = true
+        dragStartPos = input.Position
+        buttonStartPos = primeButton.Position
+    end
+end)
+
+primeButton.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        draggingEnabled = false
+    end
+end)
+
+primeButton.InputChanged:Connect(function(input)
+    if draggingEnabled and
+        (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        updatePosition(input)
+    end
+end)
+
+-- Adiciona o conteúdo ao menu
+-- Criação do botão para ESP
 local espToggleButton = Instance.new("TextButton")
 espToggleButton.Size = UDim2.new(1, 0, 0, 50)
-espToggleButton.Position = UDim2.new(0, 0, 0, 60)
+espToggleButton.Position = UDim2.new(0, 0, 0, 10)
 espToggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
 espToggleButton.Text = "ESP: OFF"
 espToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -102,10 +141,10 @@ espToggleButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Criação do botão para Toggle NoClip
+-- Criação do botão para NoClip
 local noclipToggleButton = Instance.new("TextButton")
 noclipToggleButton.Size = UDim2.new(1, 0, 0, 50)
-noclipToggleButton.Position = UDim2.new(0, 0, 0, 120)
+noclipToggleButton.Position = UDim2.new(0, 0, 0, 70)
 noclipToggleButton.BackgroundColor3 = Color3.fromRGB(150, 0, 150)
 noclipToggleButton.Text = "NoClip: OFF"
 noclipToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -117,70 +156,36 @@ noclipToggleButton.Parent = menuFrame
 local noclipEnabled = false
 
 -- Função para ativar ou desativar NoClip
-local function toggleNoClip()
-    noclipEnabled = not noclipEnabled
-    noclipToggleButton.Text = noclipEnabled and "NoClip: ON" or "NoClip: OFF"
-    
+local function activateNoClip()
     local character = game.Players.LocalPlayer.Character
     if character and character:FindFirstChild("Humanoid") then
-        if noclipEnabled then
-            -- Ativa o NoClip
-            character.Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
-        else
-            -- Desativa o NoClip
-            character.Humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
-        end
+        character.Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+    end
+end
+
+local function deactivateNoClip()
+    local character = game.Players.LocalPlayer.Character
+    if character and character:FindFirstChild("Humanoid") then
+        character.Humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
     end
 end
 
 -- Conecta a função ao botão de toggle para NoClip
 noclipToggleButton.MouseButton1Click:Connect(function()
-    toggleNoClip()
-end)
-
--- Criação do TextBox para Speedhack
-local speedLabel = Instance.new("TextLabel")
-speedLabel.Size = UDim2.new(1, 0, 0, 30)
-speedLabel.Position = UDim2.new(0, 0, 0, 180)
-speedLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-speedLabel.Text = "Speed:"
-speedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-speedLabel.TextScaled = true
-speedLabel.TextStrokeTransparency = 0.5
-speedLabel.Parent = menuFrame
-
-local speedInput = Instance.new("TextBox")
-speedInput.Size = UDim2.new(1, -20, 0, 30)
-speedInput.Position = UDim2.new(0, 10, 0, 220)
-speedInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-speedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-speedInput.TextScaled = true
-speedInput.PlaceholderText = "Enter speed (0-300)"
-speedInput.Text = "0"
-speedInput.Parent = menuFrame
-
--- Função para atualizar a velocidade do jogador
-local function updateSpeed(speed)
-    local character = game.Players.LocalPlayer.Character
-    if character and character:FindFirstChild("Humanoid") then
-        character.Humanoid.WalkSpeed = speed
-    end
-end
-
--- Função para lidar com a entrada de texto do TextBox
-speedInput.FocusLost:Connect(function()
-    local speed = tonumber(speedInput.Text)
-    if speed then
-        speed = math.clamp(speed, 0, 300)
-        speedInput.Text = tostring(speed)
-        updateSpeed(speed)
+    noclipEnabled = not noclipEnabled
+    noclipToggleButton.Text = noclipEnabled and "NoClip: ON" or "NoClip: OFF"
+    
+    if noclipEnabled then
+        activateNoClip()
+    else
+        deactivateNoClip()
     end
 end)
 
--- Criação do TextBox para Power Jump
+-- Criação do botão para Power Jump
 local powerJumpLabel = Instance.new("TextLabel")
 powerJumpLabel.Size = UDim2.new(1, 0, 0, 30)
-powerJumpLabel.Position = UDim2.new(0, 0, 0, 270)
+powerJumpLabel.Position = UDim2.new(0, 0, 0, 130)
 powerJumpLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 powerJumpLabel.Text = "Power Jump:"
 powerJumpLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -190,7 +195,7 @@ powerJumpLabel.Parent = menuFrame
 
 local powerJumpInput = Instance.new("TextBox")
 powerJumpInput.Size = UDim2.new(1, -20, 0, 30)
-powerJumpInput.Position = UDim2.new(0, 10, 0, 310)
+powerJumpInput.Position = UDim2.new(0, 10, 0, 170)
 powerJumpInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 powerJumpInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 powerJumpInput.TextScaled = true
@@ -206,101 +211,75 @@ local function updatePowerJump(power)
     end
 end
 
--- Função para lidar com a entrada de texto do TextBox para Power Jump
 powerJumpInput.FocusLost:Connect(function()
     local power = tonumber(powerJumpInput.Text)
-    if power then
-        power = math.clamp(power, 0, 300)
-        powerJumpInput.Text = tostring(power)
+    if power and power >= 0 and power <= 300 then
         updatePowerJump(power)
+    else
+        powerJumpInput.Text = "0"
     end
 end)
 
--- Criação do botão para Teleportar para um Jogador
+-- Criação do botão para Teleportar para o jogador
 local teleportButton = Instance.new("TextButton")
 teleportButton.Size = UDim2.new(1, 0, 0, 50)
-teleportButton.Position = UDim2.new(0, 0, 0, 370)
-teleportButton.BackgroundColor3 = Color3.fromRGB(0, 150, 150)
-teleportButton.Text = "Teleport"
+teleportButton.Position = UDim2.new(0, 0, 0, 210)
+teleportButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+teleportButton.Text = "Teleport to Player"
 teleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 teleportButton.TextScaled = true
 teleportButton.TextStrokeTransparency = 0.5
 teleportButton.ZIndex = 10
 teleportButton.Parent = menuFrame
 
--- Função para teleportar para um jogador
-local function teleportToPlayer(player)
-    local character = game.Players.LocalPlayer.Character
-    if character and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        character:SetPrimaryPartCFrame(player.Character.HumanoidRootPart.CFrame)
+-- Criação do TextBox para escolher o jogador para teleportar
+local playerInput = Instance.new("TextBox")
+playerInput.Size = UDim2.new(1, -20, 0, 30)
+playerInput.Position = UDim2.new(0, 10, 0, 270)
+playerInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+playerInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+playerInput.TextScaled = true
+playerInput.PlaceholderText = "Enter Player Name"
+playerInput.Text = ""
+playerInput.Parent = menuFrame
+
+-- Função para teleportar para o jogador
+local function teleportToPlayer(playerName)
+    local player = game.Players:FindFirstChild(playerName)
+    if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        game.Players.LocalPlayer.Character:MoveTo(player.Character.HumanoidRootPart.Position)
     end
 end
 
--- Adicionar uma lista de jogadores no menu (para o exemplo)
-local playerList = Instance.new("Frame")
-playerList.Size = UDim2.new(1, 0, 0, 150)
-playerList.Position = UDim2.new(0, 0, 0, 430)
-playerList.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-playerList.Parent = menuFrame
-
-local function updatePlayerList()
-    -- Limpa a lista de jogadores antes de atualizar
-    for _, child in pairs(playerList:GetChildren()) do
-        if child:IsA("TextButton") then
-            child:Destroy()
-        end
+-- Conecta a função ao botão de teleportar
+teleportButton.MouseButton1Click:Connect(function()
+    local playerName = playerInput.Text
+    if playerName and playerName ~= "" then
+        teleportToPlayer(playerName)
     end
-    
-    local players = game.Players:GetPlayers()
-    local yPosition = 0
-    for _, player in pairs(players) do
-        if player ~= game.Players.LocalPlayer then
-            local playerButton = Instance.new("TextButton")
-            playerButton.Size = UDim2.new(1, -10, 0, 30)
-            playerButton.Position = UDim2.new(0, 5, 0, yPosition)
-            playerButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-            playerButton.Text = player.Name
-            playerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-            playerButton.TextScaled = true
-            playerButton.TextStrokeTransparency = 0.5
-            playerButton.Parent = playerList
+end)
 
-            playerButton.MouseButton1Click:Connect(function()
-                teleportToPlayer(player)
-            end)
-            
-            yPosition = yPosition + 35
-        end
+-- Adiciona o botão de arrastar
+local function onDragStart(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        draggingEnabled = true
+        dragStartPos = input.Position
+        buttonStartPos = primeButton.Position
     end
 end
 
--- Atualiza a lista de jogadores ao abrir o menu
-primeButton.MouseButton1Click:Connect(updatePlayerList)
-
--- Criação do botão para ativar/desativar o Power Jump
-local powerJumpToggleButton = Instance.new("TextButton")
-powerJumpToggleButton.Size = UDim2.new(1, 0, 0, 50)
-powerJumpToggleButton.Position = UDim2.new(0, 0, 0, 580)
-powerJumpToggleButton.BackgroundColor3 = Color3.fromRGB(150, 150, 0)
-powerJumpToggleButton.Text = "Power Jump: OFF"
-powerJumpToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-powerJumpToggleButton.TextScaled = true
-powerJumpToggleButton.TextStrokeTransparency = 0.5
-powerJumpToggleButton.ZIndex = 10
-powerJumpToggleButton.Parent = menuFrame
-
-local powerJumpEnabled = false
-
--- Função para ativar ou desativar o Power Jump
-local function togglePowerJump()
-    powerJumpEnabled = not powerJumpEnabled
-    powerJumpToggleButton.Text = powerJumpEnabled and "Power Jump: ON" or "Power Jump: OFF"
-    
-    local character = game.Players.LocalPlayer.Character
-    if character and character:FindFirstChild("Humanoid") then
-        character.Humanoid.JumpPower = powerJumpEnabled and tonumber(powerJumpInput.Text) or 0
+local function onDragEnd(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        draggingEnabled = false
     end
 end
 
--- Conecta a função ao botão de toggle para Power Jump
-powerJumpToggleButton.MouseButton1Click:Connect(togglePowerJump)
+local function onDrag(input)
+    if draggingEnabled then
+        updatePosition(input)
+    end
+end
+
+primeButton.InputBegan:Connect(onDragStart)
+primeButton.InputEnded:Connect(onDragEnd)
+primeButton.InputChanged:Connect(onDrag)
