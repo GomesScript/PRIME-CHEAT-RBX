@@ -224,61 +224,148 @@ powerJumpInput.FocusLost:Connect(function(enterPressed)
     end
 end)
 
--- Criação do botão de toggle para Aimbot
-local aimbotToggleButton = Instance.new("TextButton")
-aimbotToggleButton.Size = UDim2.new(1, 0, 0, 50)
-aimbotToggleButton.Position = UDim2.new(0, 0, 0, 320)
-aimbotToggleButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
-aimbotToggleButton.Text = "Aimbot: OFF"
-aimbotToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-aimbotToggleButton.TextScaled = true
-aimbotToggleButton.TextStrokeTransparency = 0.5
-aimbotToggleButton.ZIndex = 10 -- Garantir que o botão esteja visível
-aimbotToggleButton.Parent = frame
+-- Criação do botão de toggle para TP to Player
+local tpButton = Instance.new("TextButton")
+tpButton.Size = UDim2.new(1, 0, 0, 50)
+tpButton.Position = UDim2.new(0, 0, 0, 320)
+tpButton.BackgroundColor3 = Color3.fromRGB(0, 100, 150)
+tpButton.Text = "TP to Player"
+tpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+tpButton.TextScaled = true
+tpButton.TextStrokeTransparency = 0.5
+tpButton.ZIndex = 10 -- Garantir que o botão esteja visível
+tpButton.Parent = frame
 
-local aimbotEnabled = false
+-- Criação da janela de TP to Player
+local tpFrame = Instance.new("Frame")
+tpFrame.Size = UDim2.new(0, 300, 0, 150)
+tpFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
+tpFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+tpFrame.Visible = false
+tpFrame.Parent = screenGui
 
--- Função para ativar o Aimbot
-local function activateAimbot()
-    local aimbotScript = Instance.new("LocalScript")
-    aimbotScript.Source = [[
-        local player = game.Players.LocalPlayer
-        local mouse = player:GetMouse()
+-- Criação do título da janela TP to Player com efeito RGB
+local tpTitle = Instance.new("TextLabel")
+tpTitle.Size = UDim2.new(1, 0, 0, 50)
+tpTitle.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+tpTitle.Text = "TP TO PLAYER"
+tpTitle.TextColor3 = Color3.fromRGB(255, 255, 255) -- Inicialmente branco
+tpTitle.TextScaled = true
+tpTitle.TextStrokeTransparency = 0.5
+tpTitle.TextSize = 24
+tpTitle.Parent = tpFrame
 
-        local function onRenderStep()
-            if mouse.Target and mouse.Target.Parent and mouse.Target.Parent:FindFirstChild("Humanoid") then
-                local character = mouse.Target.Parent
-                if character and character ~= player.Character then
-                    mouse.Hit = character.PrimaryPart.CFrame
-                end
-            end
-        end
-
-        game:GetService("RunService").RenderStepped:Connect(onRenderStep)
-    ]]
-    aimbotScript.Parent = player.PlayerGui
+-- Função para atualizar a cor do texto com efeito RGB
+local function updateTpTextColor()
+    while tpFrame.Visible do
+        tpTitle.TextColor3 = getRandomColor()
+        wait(0.2) -- Ajuste o intervalo para a velocidade do efeito RGB
+    end
 end
 
--- Função para desativar o Aimbot
-local function deactivateAimbot()
+-- Inicia a atualização da cor do texto da janela TP to Player
+coroutine.wrap(updateTpTextColor)()
+
+-- Criação do TextBox para o nome do jogador
+local tpInput = Instance.new("TextBox")
+tpInput.Size = UDim2.new(1, -20, 0, 30)
+tpInput.Position = UDim2.new(0, 10, 0, 60)
+tpInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+tpInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+tpInput.TextScaled = true
+tpInput.PlaceholderText = "Enter player username"
+tpInput.Text = ""
+tpInput.Parent = tpFrame
+
+-- Criação do botão de confirmar TP
+local tpConfirmButton = Instance.new("TextButton")
+tpConfirmButton.Size = UDim2.new(1, 0, 0, 30)
+tpConfirmButton.Position = UDim2.new(0, 0, 0, 100)
+tpConfirmButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+tpConfirmButton.Text = "Teleport"
+tpConfirmButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+tpConfirmButton.TextScaled = true
+tpConfirmButton.TextStrokeTransparency = 0.5
+tpConfirmButton.ZIndex = 10 -- Garantir que o botão esteja visível
+tpConfirmButton.Parent = tpFrame
+
+-- Criação do botão de fechar a janela TP to Player
+local tpCloseButton = Instance.new("TextButton")
+tpCloseButton.Size = UDim2.new(0, 50, 0, 30)
+tpCloseButton.Position = UDim2.new(1, -60, 0, 10)
+tpCloseButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+tpCloseButton.Text = "Close"
+tpCloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+tpCloseButton.TextScaled = true
+tpCloseButton.TextStrokeTransparency = 0.5
+tpCloseButton.ZIndex = 10 -- Garantir que o botão esteja visível
+tpCloseButton.Parent = tpFrame
+
+-- Função para teleportar o jogador
+local function teleportToPlayer(username)
+    local player = game.Players:FindFirstChild(username)
+    if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame
+    end
+end
+
+-- Conecta a função ao botão de TP to Player
+tpButton.MouseButton1Click:Connect(function()
+    tpFrame.Visible = true
+end)
+
+-- Conecta a função ao botão de confirmar TP
+tpConfirmButton.MouseButton1Click:Connect(function()
+    local username = tpInput.Text
+    if username and username ~= "" then
+        teleportToPlayer(username)
+    end
+end)
+
+-- Conecta a função ao botão de fechar a janela TP to Player
+tpCloseButton.MouseButton1Click:Connect(function()
+    tpFrame.Visible = false
+end)
+
+-- Criação do botão de toggle para Fly
+local flyToggleButton = Instance.new("TextButton")
+flyToggleButton.Size = UDim2.new(1, 0, 0, 50)
+flyToggleButton.Position = UDim2.new(0, 0, 0, 370)
+flyToggleButton.BackgroundColor3 = Color3.fromRGB(150, 0, 150)
+flyToggleButton.Text = "Fly: OFF"
+flyToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+flyToggleButton.TextScaled = true
+flyToggleButton.TextStrokeTransparency = 0.5
+flyToggleButton.ZIndex = 10 -- Garantir que o botão esteja visível
+flyToggleButton.Parent = frame
+
+local flyEnabled = false
+
+-- Função para ativar o Fly
+local function activateFly()
+    local flyScript = Instance.new("LocalScript")
+    flyScript.Source = game:HttpGet("https://raw.githubusercontent.com/zackdoesstuff/ROBLOX-Fly-Script/main/Fly%20Script")
+    flyScript.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+end
+
+-- Função para desativar o Fly
+local function deactivateFly()
     local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
     for _, child in pairs(playerGui:GetChildren()) do
-        if child:IsA("LocalScript") and child.Source:find("Aimbot") then
+        if child:IsA("LocalScript") and child.Source:find("Fly") then
             child:Destroy()
         end
     end
 end
 
--- Conecta a função ao botão de toggle para Aimbot
-aimbotToggleButton.MouseButton1Click:Connect(function()
-    aimbotEnabled = not aimbotEnabled
-    aimbotToggleButton.Text = aimbotEnabled and "Aimbot: ON" or "Aimbot: OFF"
+-- Conecta a função ao botão de toggle para Fly
+flyToggleButton.MouseButton1Click:Connect(function()
+    flyEnabled = not flyEnabled
+    flyToggleButton.Text = flyEnabled and "Fly: ON" or "Fly: OFF"
     
-    if aimbotEnabled then
-        activateAimbot()
+    if flyEnabled then
+        activateFly()
     else
-        deactivateAimbot()
+        deactivateFly()
     end
 end)
-
-
