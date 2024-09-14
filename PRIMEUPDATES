@@ -1,17 +1,19 @@
--- Criação do ScreenGui
+-- Criação do menu
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "MenuGui"
 screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Criação do frame principal
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 550) -- Tamanho ajustado
+-- Criação do Frame principal do menu
+local frame = Instance.new("ScrollingFrame")
+frame.Size = UDim2.new(0, 300, 0, 550)
 frame.Position = UDim2.new(0.5, -150, 0.5, -275)
 frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+frame.ScrollBarThickness = 10
+frame.CanvasSize = UDim2.new(0, 0, 0, 700) -- Ajuste o CanvasSize conforme necessário
 frame.Parent = screenGui
-frame.Visible = false -- Inicialmente invisível
+frame.Visible = false -- Inicia como invisível
 
--- Criação do título
+-- Criação do título fixo no topo do menu com efeito RGB
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 50)
 title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -20,6 +22,7 @@ title.TextColor3 = Color3.fromRGB(255, 255, 255) -- Inicialmente branco
 title.TextScaled = true
 title.TextStrokeTransparency = 0.5
 title.TextSize = 24
+title.TextXAlignment = Enum.TextXAlignment.Center
 title.Parent = frame
 
 -- Função para gerar uma cor RGB viva aleatória
@@ -189,7 +192,7 @@ end)
 -- Criação do TextBox para Power Jump
 local powerJumpLabel = Instance.new("TextLabel")
 powerJumpLabel.Size = UDim2.new(1, 0, 0, 30)
-powerJumpLabel.Position = UDim2.new(0, 0, 0, 220) -- Ajustado para a nova posição
+powerJumpLabel.Position = UDim2.new(0, 0, 0, 220)
 powerJumpLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 powerJumpLabel.Text = "Power Jump:"
 powerJumpLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -199,7 +202,7 @@ powerJumpLabel.Parent = frame
 
 local powerJumpInput = Instance.new("TextBox")
 powerJumpInput.Size = UDim2.new(1, -20, 0, 30)
-powerJumpInput.Position = UDim2.new(0, 10, 0, 260) -- Ajustado para a nova posição
+powerJumpInput.Position = UDim2.new(0, 10, 0, 260)
 powerJumpInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 powerJumpInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 powerJumpInput.TextScaled = true
@@ -208,156 +211,132 @@ powerJumpInput.Text = "0"
 powerJumpInput.Parent = frame
 
 -- Função para atualizar o poder do pulo do jogador
-local function updateJumpPower(jumpPower)
+local function updatePowerJump(power)
     local character = game.Players.LocalPlayer.Character
     if character and character:FindFirstChild("Humanoid") then
-        character.Humanoid.JumpPower = jumpPower
+        character.Humanoid.JumpPower = power
     end
 end
 
--- Função para lidar com a entrada de texto do TextBox do Power Jump
+-- Função para lidar com a entrada de texto do TextBox
 powerJumpInput.FocusLost:Connect(function(enterPressed)
-    local jumpPower = tonumber(powerJumpInput.Text)
-    if jumpPower then
-        jumpPower = math.clamp(jumpPower, 0, 300)
-        powerJumpInput.Text = tostring(jumpPower)
-        updateJumpPower(jumpPower)
+    local power = tonumber(powerJumpInput.Text)
+    if power then
+        power = math.clamp(power, 0, 300)
+        powerJumpInput.Text = tostring(power)
+        updatePowerJump(power)
     end
-end)
-
--- Criação do botão de toggle para TP to Player
-local tpButton = Instance.new("TextButton")
-tpButton.Size = UDim2.new(1, 0, 0, 50)
-tpButton.Position = UDim2.new(0, 0, 0, 320)
-tpButton.BackgroundColor3 = Color3.fromRGB(0, 100, 150)
-tpButton.Text = "TP to Player"
-tpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-tpButton.TextScaled = true
-tpButton.TextStrokeTransparency = 0.5
-tpButton.ZIndex = 10 -- Garantir que o botão esteja visível
-tpButton.Parent = frame
-
--- Criação da janela de TP to Player
-local tpFrame = Instance.new("Frame")
-tpFrame.Size = UDim2.new(0, 300, 0, 150)
-tpFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
-tpFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-tpFrame.Visible = false
-tpFrame.Parent = screenGui
-
--- Criação do título da janela TP to Player com efeito RGB
-local tpTitle = Instance.new("TextLabel")
-tpTitle.Size = UDim2.new(1, 0, 0, 50)
-tpTitle.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-tpTitle.Text = "TP TO PLAYER"
-tpTitle.TextColor3 = Color3.fromRGB(255, 255, 255) -- Inicialmente branco
-tpTitle.TextScaled = true
-tpTitle.TextStrokeTransparency = 0.5
-tpTitle.TextSize = 24
-tpTitle.Parent = tpFrame
-
--- Função para atualizar a cor do texto com efeito RGB
-local function updateTpTextColor()
-    while tpFrame.Visible do
-        tpTitle.TextColor3 = getRandomColor()
-        wait(0.2) -- Ajuste o intervalo para a velocidade do efeito RGB
-    end
-end
-
--- Inicia a atualização da cor do texto da janela TP to Player
-coroutine.wrap(updateTpTextColor)()
-
--- Criação do TextBox para o nome do jogador
-local tpInput = Instance.new("TextBox")
-tpInput.Size = UDim2.new(1, -20, 0, 30)
-tpInput.Position = UDim2.new(0, 10, 0, 60)
-tpInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-tpInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-tpInput.TextScaled = true
-tpInput.PlaceholderText = "Enter player username"
-tpInput.Text = ""
-tpInput.Parent = tpFrame
-
--- Criação do botão de confirmar TP
-local tpConfirmButton = Instance.new("TextButton")
-tpConfirmButton.Size = UDim2.new(1, 0, 0, 30)
-tpConfirmButton.Position = UDim2.new(0, 0, 0, 100)
-tpConfirmButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
-tpConfirmButton.Text = "Teleport"
-tpConfirmButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-tpConfirmButton.TextScaled = true
-tpConfirmButton.TextStrokeTransparency = 0.5
-tpConfirmButton.ZIndex = 10 -- Garantir que o botão esteja visível
-tpConfirmButton.Parent = tpFrame
-
--- Criação do botão de fechar a janela TP to Player
-local tpCloseButton = Instance.new("TextButton")
-tpCloseButton.Size = UDim2.new(0, 50, 0, 30)
-tpCloseButton.Position = UDim2.new(1, -60, 0, 10)
-tpCloseButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-tpCloseButton.Text = "Close"
-tpCloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-tpCloseButton.TextScaled = true
-tpCloseButton.TextStrokeTransparency = 0.5
-tpCloseButton.ZIndex = 10 -- Garantir que o botão esteja visível
-tpCloseButton.Parent = tpFrame
-
--- Função para teleportar o jogador
-local function teleportToPlayer(username)
-    local player = game.Players:FindFirstChild(username)
-    if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame
-    end
-end
-
--- Conecta a função ao botão de TP to Player
-tpButton.MouseButton1Click:Connect(function()
-    tpFrame.Visible = true
-end)
-
--- Conecta a função ao botão de confirmar TP
-tpConfirmButton.MouseButton1Click:Connect(function()
-    local username = tpInput.Text
-    if username and username ~= "" then
-        teleportToPlayer(username)
-    end
-end)
-
--- Conecta a função ao botão de fechar a janela TP to Player
-tpCloseButton.MouseButton1Click:Connect(function()
-    tpFrame.Visible = false
 end)
 
 -- Criação do botão de toggle para Noclip
-local noclipButton = Instance.new("TextButton")
-noclipButton.Size = UDim2.new(1, 0, 0, 50)
-noclipButton.Position = UDim2.new(0, 0, 0, 380)
-noclipButton.BackgroundColor3 = Color3.fromRGB(150, 0, 150)
-noclipButton.Text = "Noclip: OFF"
-noclipButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-noclipButton.TextScaled = true
-noclipButton.TextStrokeTransparency = 0.5
-noclipButton.ZIndex = 10 -- Garantir que o botão esteja visível
-noclipButton.Parent = frame
+local noclipToggleButton = Instance.new("TextButton")
+noclipToggleButton.Size = UDim2.new(1, 0, 0, 50)
+noclipToggleButton.Position = UDim2.new(0, 0, 0, 320)
+noclipToggleButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+noclipToggleButton.Text = "NoClip: OFF"
+noclipToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+noclipToggleButton.TextScaled = true
+noclipToggleButton.TextStrokeTransparency = 0.5
+noclipToggleButton.ZIndex = 10 -- Garantir que o botão esteja visível
+noclipToggleButton.Parent = frame
 
 local noclipEnabled = false
 
--- Função para ativar ou desativar Noclip
-local function toggleNoclip()
-    noclipEnabled = not noclipEnabled
-    noclipButton.Text = noclipEnabled and "Noclip: ON" or "Noclip: OFF"
-    
+-- Função para ativar o NoClip
+local function activateNoClip()
     local character = game.Players.LocalPlayer.Character
-    if character and character:FindFirstChild("Humanoid") then
-        if noclipEnabled then
-            -- Ativa o noclip
-            character.Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
-        else
-            -- Desativa o noclip
-            character.Humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+    if character then
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
         end
     end
 end
 
--- Conecta a função ao botão de toggle para Noclip
-noclipButton.MouseButton1Click:Connect(toggleNoclip)
+-- Função para desativar o NoClip
+local function deactivateNoClip()
+    local character = game.Players.LocalPlayer.Character
+    if character then
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = true
+            end
+        end
+    end
+end
+
+-- Conecta a função ao botão de toggle para NoClip
+noclipToggleButton.MouseButton1Click:Connect(function()
+    noclipEnabled = not noclipEnabled
+    noclipToggleButton.Text = noclipEnabled and "NoClip: ON" or "NoClip: OFF"
+    
+    if noclipEnabled then
+        activateNoClip()
+    else
+        deactivateNoClip()
+    end
+end)
+
+-- Criação do botão para teleportar para o jogador
+local teleportButton = Instance.new("TextButton")
+teleportButton.Size = UDim2.new(1, 0, 0, 50)
+teleportButton.Position = UDim2.new(0, 0, 0, 380)
+teleportButton.BackgroundColor3 = Color3.fromRGB(0, 150, 150)
+teleportButton.Text = "Teleport to Player"
+teleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+teleportButton.TextScaled = true
+teleportButton.TextStrokeTransparency = 0.5
+teleportButton.ZIndex = 10 -- Garantir que o botão esteja visível
+teleportButton.Parent = frame
+
+-- Função para teleportar para o jogador
+local function teleportToPlayer()
+    local player = game.Players.LocalPlayer
+    local targetPlayer = game.Players:GetPlayers()[1] -- Altere isso conforme necessário para selecionar o jogador-alvo
+    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        player.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame
+    end
+end
+
+-- Conecta a função ao botão de teleportar para o jogador
+teleportButton.MouseButton1Click:Connect(teleportToPlayer)
+
+-- Adiciona funcionalidade de arrasto ao título (opcional, se necessário)
+local draggingEnabled = false
+local dragStartPos = nil
+local frameStartPos = nil
+
+local function updatePosition(input)
+    local delta = input.Position - dragStartPos
+    frame.Position = UDim2.new(
+        frameStartPos.X.Scale,
+        frameStartPos.X.Offset + delta.X,
+        frameStartPos.Y.Scale,
+        frameStartPos.Y.Offset + delta.Y
+    )
+end
+
+-- Começa o arrasto do frame quando o título é clicado
+title.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        draggingEnabled = true
+        dragStartPos = input.Position
+        frameStartPos = frame.Position
+    end
+end)
+
+-- Para o arrasto do frame quando o título é liberado
+title.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        draggingEnabled = false
+    end
+end)
+
+-- Atualiza a posição do frame enquanto arrasta
+title.InputChanged:Connect(function(input)
+    if draggingEnabled and
+        (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        updatePosition(input)
+    end
+end)
