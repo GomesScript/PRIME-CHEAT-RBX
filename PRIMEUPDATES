@@ -5,8 +5,8 @@ screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 -- Criação do menu principal
 local menuFrame = Instance.new("ScrollingFrame")
-menuFrame.Size = UDim2.new(0, 300, 0, 550)
-menuFrame.Position = UDim2.new(0.5, -150, 0.5, -275)
+menuFrame.Size = UDim2.new(0, 250, 0, 400) -- Tamanho reduzido
+menuFrame.Position = UDim2.new(0.5, -125, 0.5, -200) -- Centralizado
 menuFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 menuFrame.BorderSizePixel = 0
 menuFrame.ScrollBarThickness = 8
@@ -15,14 +15,14 @@ menuFrame.Parent = screenGui
 
 -- Criação do título "PRIME CHEATS" como marca d'água
 local watermark = Instance.new("TextLabel")
-watermark.Size = UDim2.new(0, 200, 0, 50)
+watermark.Size = UDim2.new(0, 180, 0, 40)
 watermark.Position = UDim2.new(0, 10, 0, 10)
 watermark.BackgroundTransparency = 1
 watermark.Text = "PRIME CHEATS"
 watermark.TextColor3 = Color3.fromRGB(255, 255, 255)
 watermark.TextScaled = true
 watermark.TextStrokeTransparency = 0.5
-watermark.TextSize = 24
+watermark.TextSize = 20
 watermark.Parent = screenGui
 
 -- Função para gerar uma cor RGB viva aleatória
@@ -43,8 +43,8 @@ coroutine.wrap(updateWatermarkColor)()
 
 -- Criação do botão "Prime" para abrir/fechar o menu
 local primeButton = Instance.new("TextButton")
-primeButton.Size = UDim2.new(0, 100, 0, 50)
-primeButton.Position = UDim2.new(1, -110, 0, 10)
+primeButton.Size = UDim2.new(0, 80, 0, 40) -- Tamanho reduzido
+primeButton.Position = UDim2.new(1, -90, 0, 10) -- Ajustar posição
 primeButton.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
 primeButton.Text = "Prime"
 primeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -193,6 +193,7 @@ powerJumpLabel.TextScaled = true
 powerJumpLabel.TextStrokeTransparency = 0.5
 powerJumpLabel.Parent = menuFrame
 
+-- Criação do TextBox para o poder do pulo
 local powerJumpInput = Instance.new("TextBox")
 powerJumpInput.Size = UDim2.new(1, -20, 0, 30)
 powerJumpInput.Position = UDim2.new(0, 10, 0, 170)
@@ -232,57 +233,60 @@ teleportButton.TextStrokeTransparency = 0.5
 teleportButton.ZIndex = 10
 teleportButton.Parent = menuFrame
 
--- Criação do TextBox para escolher o jogador para teleportar
-local playerInput = Instance.new("TextBox")
-playerInput.Size = UDim2.new(1, -20, 0, 30)
-playerInput.Position = UDim2.new(0, 10, 0, 270)
-playerInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-playerInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-playerInput.TextScaled = true
-playerInput.PlaceholderText = "Enter Player Name"
-playerInput.Text = ""
-playerInput.Parent = menuFrame
+-- Criação do Frame para listar jogadores
+local playerListFrame = Instance.new("Frame")
+playerListFrame.Size = UDim2.new(1, 0, 0, 100)
+playerListFrame.Position = UDim2.new(0, 0, 0, 270)
+playerListFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+playerListFrame.Visible = false
+playerListFrame.Parent = menuFrame
+
+local playerListLayout = Instance.new("UIListLayout")
+playerListLayout.Parent = playerListFrame
+playerListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+playerListLayout.Padding = UDim.new(0, 5)
+
+local function updatePlayerList()
+    -- Limpar a lista de jogadores
+    for _, child in pairs(playerListFrame:GetChildren()) do
+        if child:IsA("TextButton") then
+            child:Destroy()
+        end
+    end
+
+    -- Adicionar jogadores à lista
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player ~= game.Players.LocalPlayer then
+            local playerButton = Instance.new("TextButton")
+            playerButton.Size = UDim2.new(1, -10, 0, 30)
+            playerButton.Position = UDim2.new(0, 5, 0, (playerListLayout.AbsoluteContentSize.Y + 5) % 35)
+            playerButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+            playerButton.Text = player.Name
+            playerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+            playerButton.TextScaled = true
+            playerButton.TextStrokeTransparency = 0.5
+            playerButton.Parent = playerListFrame
+
+            playerButton.MouseButton1Click:Connect(function()
+                teleportToPlayer(player.Name)
+            end)
+        end
+    end
+end
 
 -- Função para teleportar para o jogador
 local function teleportToPlayer(playerName)
     local player = game.Players:FindFirstChild(playerName)
     if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        game.Players.LocalPlayer.Character:MoveTo(player.Character.HumanoidRootPart.Position)
+        local character = game.Players.LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame
+        end
     end
 end
 
--- Conecta a função ao botão de teleportar
 teleportButton.MouseButton1Click:Connect(function()
-    local playerName = playerInput.Text
-    if playerName and playerName ~= "" then
-        teleportToPlayer(playerName)
-    end
+    playerListFrame.Visible = not playerListFrame.Visible
+    updatePlayerList()
 end)
 
--- Finalização do script para garantir que o menu é rolável e o botão "Prime" é arrastável
--- Garantir que o botão "Prime" esteja visível e posicionado corretamente
-
--- Correção para o comportamento de arrastar do botão "Prime"
-local function onDragStart(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        draggingEnabled = true
-        dragStartPos = input.Position
-        buttonStartPos = primeButton.Position
-    end
-end
-
-local function onDragEnd(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        draggingEnabled = false
-    end
-end
-
-local function onDrag(input)
-    if draggingEnabled then
-        updatePosition(input)
-    end
-end
-
-primeButton.InputBegan:Connect(onDragStart)
-primeButton.InputEnded:Connect(onDragEnd)
-primeButton.InputChanged:Connect(onDrag)
