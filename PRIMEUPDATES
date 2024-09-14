@@ -173,10 +173,53 @@ powerJumpInput.FocusLost:Connect(function()
     end
 end)
 
+-- Criação do botão para ESP
+local espToggleButton = Instance.new("TextButton")
+espToggleButton.Size = UDim2.new(1, 0, 0, 50)
+espToggleButton.Position = UDim2.new(0, 0, 0, 290)
+espToggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+espToggleButton.Text = "ESP: OFF"
+espToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+espToggleButton.TextScaled = true
+espToggleButton.TextStrokeTransparency = 0.5
+espToggleButton.ZIndex = 10
+espToggleButton.Parent = menuFrame
+
+local espEnabled = false
+
+-- Função para ativar o ESP
+local function activateESP()
+    loadstring(game:HttpGet("https://scriptblox.com/raw/Universal-Script-3d-Box-ESP-5346"))()
+end
+
+-- Função para desativar o ESP
+local function deactivateESP()
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player.Character and player.Character:FindFirstChild("Head") then
+            local esp = player.Character.Head:FindFirstChild("ESP")
+            if esp then
+                esp:Destroy()
+            end
+        end
+    end
+end
+
+-- Conecta a função ao botão de toggle para ESP
+espToggleButton.MouseButton1Click:Connect(function()
+    espEnabled = not espEnabled
+    espToggleButton.Text = espEnabled and "ESP: ON" or "ESP: OFF"
+    
+    if espEnabled then
+        activateESP()
+    else
+        deactivateESP()
+    end
+end)
+
 -- Criação do botão para Teleportar para o jogador
 local teleportButton = Instance.new("TextButton")
 teleportButton.Size = UDim2.new(1, 0, 0, 50)
-teleportButton.Position = UDim2.new(0, 0, 0, 290)
+teleportButton.Position = UDim2.new(0, 0, 0, 350)
 teleportButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
 teleportButton.Text = "Teleport to Player"
 teleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -185,13 +228,13 @@ teleportButton.TextStrokeTransparency = 0.5
 teleportButton.ZIndex = 10
 teleportButton.Parent = menuFrame
 
--- Criação do frame para lista de jogadores
-local playerListFrame = Instance.new("ScrollingFrame")
-playerListFrame.Size = UDim2.new(1, 0, 0, 200)
-playerListFrame.Position = UDim2.new(0, 0, 0, 350)
-playerListFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+-- Criação do Frame para lista de jogadores
+local playerListFrame = Instance.new("Frame")
+playerListFrame.Size = UDim2.new(1, 0, 0, 150)
+playerListFrame.Position = UDim2.new(0, 0, 0, 410)
+playerListFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 playerListFrame.BorderSizePixel = 0
-playerListFrame.ScrollBarThickness = 8
+playerListFrame.Visible = false
 playerListFrame.Parent = menuFrame
 
 -- Função para atualizar a lista de jogadores
@@ -222,19 +265,23 @@ local function updatePlayerList()
                 teleportToPlayer(player.Name)
             end)
 
-            yOffset = yOffset + 50
+            yOffset = yOffset + 45
         end
     end
 end
 
--- Atualiza a lista de jogadores quando o menu é aberto
-local function onMenuOpen()
-    updatePlayerList()
+-- Função para teleportar para o jogador
+local function teleportToPlayer(playerName)
+    local player = game.Players:FindFirstChild(playerName)
+    if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        game.Players.LocalPlayer.Character:MoveTo(player.Character.HumanoidRootPart.Position)
+    end
 end
 
--- Conecta a função de atualização da lista de jogadores ao evento de abrir o menu
-menuFrame:GetPropertyChangedSignal("Visible"):Connect(function()
-    if menuFrame.Visible then
-        onMenuOpen()
+-- Conecta a função ao botão de teleportar
+teleportButton.MouseButton1Click:Connect(function()
+    playerListFrame.Visible = not playerListFrame.Visible
+    if playerListFrame.Visible then
+        updatePlayerList()
     end
 end)
