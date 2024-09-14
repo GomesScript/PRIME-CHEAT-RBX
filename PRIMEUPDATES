@@ -5,8 +5,8 @@ screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 -- Criação do menu principal
 local menuFrame = Instance.new("ScrollingFrame")
-menuFrame.Size = UDim2.new(0, 300, 0, 400)
-menuFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
+menuFrame.Size = UDim2.new(0, 300, 0, 550)
+menuFrame.Position = UDim2.new(0.5, -150, 0.5, -275)
 menuFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 menuFrame.BorderSizePixel = 0
 menuFrame.ScrollBarThickness = 8
@@ -43,7 +43,7 @@ coroutine.wrap(updateWatermarkColor)()
 
 -- Criação do botão "Prime" para abrir/fechar o menu
 local primeButton = Instance.new("TextButton")
-primeButton.Size = UDim2.new(0, 80, 0, 40)
+primeButton.Size = UDim2.new(0, 80, 0, 40) -- Tamanho reduzido do botão
 primeButton.Position = UDim2.new(1, -90, 0, 10)
 primeButton.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
 primeButton.Text = "Prime"
@@ -97,10 +97,48 @@ primeButton.InputChanged:Connect(function(input)
     end
 end)
 
+-- Criação do botão para Speedhack
+local speedHackLabel = Instance.new("TextLabel")
+speedHackLabel.Size = UDim2.new(1, 0, 0, 30)
+speedHackLabel.Position = UDim2.new(0, 0, 0, 130)
+speedHackLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+speedHackLabel.Text = "Speed Hack:"
+speedHackLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedHackLabel.TextScaled = true
+speedHackLabel.TextStrokeTransparency = 0.5
+speedHackLabel.Parent = menuFrame
+
+local speedHackInput = Instance.new("TextBox")
+speedHackInput.Size = UDim2.new(1, -20, 0, 30)
+speedHackInput.Position = UDim2.new(0, 10, 0, 170)
+speedHackInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+speedHackInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedHackInput.TextScaled = true
+speedHackInput.PlaceholderText = "Enter speed (16-100)"
+speedHackInput.Text = "16"
+speedHackInput.Parent = menuFrame
+
+-- Função para atualizar a velocidade
+local function updateSpeedHack(speed)
+    local character = game.Players.LocalPlayer.Character
+    if character and character:FindFirstChild("Humanoid") then
+        character.Humanoid.WalkSpeed = speed
+    end
+end
+
+speedHackInput.FocusLost:Connect(function()
+    local speed = tonumber(speedHackInput.Text)
+    if speed and speed >= 16 and speed <= 100 then
+        updateSpeedHack(speed)
+    else
+        speedHackInput.Text = "16"
+    end
+end)
+
 -- Criação do botão para Power Jump
 local powerJumpLabel = Instance.new("TextLabel")
 powerJumpLabel.Size = UDim2.new(1, 0, 0, 30)
-powerJumpLabel.Position = UDim2.new(0, 0, 0, 50)
+powerJumpLabel.Position = UDim2.new(0, 0, 0, 210)
 powerJumpLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 powerJumpLabel.Text = "Power Jump:"
 powerJumpLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -110,7 +148,7 @@ powerJumpLabel.Parent = menuFrame
 
 local powerJumpInput = Instance.new("TextBox")
 powerJumpInput.Size = UDim2.new(1, -20, 0, 30)
-powerJumpInput.Position = UDim2.new(0, 10, 0, 90)
+powerJumpInput.Position = UDim2.new(0, 10, 0, 250)
 powerJumpInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 powerJumpInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 powerJumpInput.TextScaled = true
@@ -135,48 +173,10 @@ powerJumpInput.FocusLost:Connect(function()
     end
 end)
 
--- Criação do botão para Speedhack
-local speedhackLabel = Instance.new("TextLabel")
-speedhackLabel.Size = UDim2.new(1, 0, 0, 30)
-speedhackLabel.Position = UDim2.new(0, 0, 0, 130)
-speedhackLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-speedhackLabel.Text = "Speedhack:"
-speedhackLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-speedhackLabel.TextScaled = true
-speedhackLabel.TextStrokeTransparency = 0.5
-speedhackLabel.Parent = menuFrame
-
-local speedhackInput = Instance.new("TextBox")
-speedhackInput.Size = UDim2.new(1, -20, 0, 30)
-speedhackInput.Position = UDim2.new(0, 10, 0, 170)
-speedhackInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-speedhackInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-speedhackInput.TextScaled = true
-speedhackInput.PlaceholderText = "Enter speed (0-100)"
-speedhackInput.Text = "16"
-speedhackInput.Parent = menuFrame
-
--- Função para atualizar a velocidade do jogador
-local function updateSpeed(speed)
-    local character = game.Players.LocalPlayer.Character
-    if character and character:FindFirstChild("Humanoid") then
-        character.Humanoid.WalkSpeed = speed
-    end
-end
-
-speedhackInput.FocusLost:Connect(function()
-    local speed = tonumber(speedhackInput.Text)
-    if speed and speed >= 0 and speed <= 100 then
-        updateSpeed(speed)
-    else
-        speedhackInput.Text = "16"
-    end
-end)
-
 -- Criação do botão para Teleportar para o jogador
 local teleportButton = Instance.new("TextButton")
 teleportButton.Size = UDim2.new(1, 0, 0, 50)
-teleportButton.Position = UDim2.new(0, 0, 0, 210)
+teleportButton.Position = UDim2.new(0, 0, 0, 290)
 teleportButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
 teleportButton.Text = "Teleport to Player"
 teleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -185,10 +185,10 @@ teleportButton.TextStrokeTransparency = 0.5
 teleportButton.ZIndex = 10
 teleportButton.Parent = menuFrame
 
--- Criação do Frame para a lista de jogadores
+-- Criação do frame para lista de jogadores
 local playerListFrame = Instance.new("ScrollingFrame")
-playerListFrame.Size = UDim2.new(1, 0, 0, 150)
-playerListFrame.Position = UDim2.new(0, 0, 0, 270)
+playerListFrame.Size = UDim2.new(1, 0, 0, 200)
+playerListFrame.Position = UDim2.new(0, 0, 0, 350)
 playerListFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 playerListFrame.BorderSizePixel = 0
 playerListFrame.ScrollBarThickness = 8
@@ -202,55 +202,39 @@ local function updatePlayerList()
             child:Destroy()
         end
     end
-    
-    -- Adiciona um botão para cada jogador
-    local players = game.Players:GetPlayers()
-    for i, player in ipairs(players) do
+
+    -- Adiciona um botão para cada jogador na lista
+    local playerList = game.Players:GetPlayers()
+    local yOffset = 0
+    for _, player in pairs(playerList) do
         if player ~= game.Players.LocalPlayer then
             local playerButton = Instance.new("TextButton")
-            playerButton.Size = UDim2.new(1, -10, 0, 30)
-            playerButton.Position = UDim2.new(0, 5, 0, (i - 1) * 35)
-            playerButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+            playerButton.Size = UDim2.new(1, 0, 0, 40)
+            playerButton.Position = UDim2.new(0, 0, 0, yOffset)
+            playerButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
             playerButton.Text = player.Name
             playerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
             playerButton.TextScaled = true
             playerButton.TextStrokeTransparency = 0.5
             playerButton.Parent = playerListFrame
 
-            -- Função para teleportar ao jogador quando o botão for clicado
             playerButton.MouseButton1Click:Connect(function()
-                if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                    game.Players.LocalPlayer.Character:MoveTo(player.Character.HumanoidRootPart.Position)
-                end
+                teleportToPlayer(player.Name)
             end)
+
+            yOffset = yOffset + 50
         end
     end
 end
 
 -- Atualiza a lista de jogadores quando o menu é aberto
-primeButton.MouseButton1Click:Connect(function()
-    toggleMenu()
+local function onMenuOpen()
+    updatePlayerList()
+end
+
+-- Conecta a função de atualização da lista de jogadores ao evento de abrir o menu
+menuFrame:GetPropertyChangedSignal("Visible"):Connect(function()
     if menuFrame.Visible then
-        updatePlayerList()
+        onMenuOpen()
     end
 end)
-
--- Criação do botão para fechar o menu
-local closeButton = Instance.new("TextButton")
-closeButton.Size = UDim2.new(0, 60, 0, 30)
-closeButton.Position = UDim2.new(1, -70, 0, 10)
-closeButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-closeButton.Text = "Close"
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.TextScaled = true
-closeButton.TextStrokeTransparency = 0.5
-closeButton.ZIndex = 10
-closeButton.Parent = menuFrame
-
-closeButton.MouseButton1Click:Connect(function()
-    menuFrame.Visible = false
-end)
-
--- Atualiza a lista de jogadores sempre que um jogador entra ou sai do jogo
-game.Players.PlayerAdded:Connect(updatePlayerList)
-game.Players.PlayerRemoved:Connect(updatePlayerList)
