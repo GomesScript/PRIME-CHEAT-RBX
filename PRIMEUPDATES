@@ -163,7 +163,7 @@ speedInput.Position = UDim2.new(0, 10, 0, 160)
 speedInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 speedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 speedInput.TextScaled = true
-speedInput.PlaceholderText = "Enter speed (0-100)"
+speedInput.PlaceholderText = "Enter speed (0-300)"
 speedInput.Text = "0"
 speedInput.Parent = frame
 
@@ -202,7 +202,7 @@ powerJumpInput.Position = UDim2.new(0, 10, 0, 260) -- Ajustado para a nova posi√
 powerJumpInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 powerJumpInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 powerJumpInput.TextScaled = true
-powerJumpInput.PlaceholderText = "Enter jump power (0-100)"
+powerJumpInput.PlaceholderText = "Enter jump power (0-300)"
 powerJumpInput.Text = "0"
 powerJumpInput.Parent = frame
 
