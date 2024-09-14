@@ -259,7 +259,10 @@ teleportButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Adiciona o botão de arrastar
+-- Finalização do script para garantir que o menu é rolável e o botão "Prime" é arrastável
+-- Garantir que o botão "Prime" esteja visível e posicionado corretamente
+
+-- Correção para o comportamento de arrastar do botão "Prime"
 local function onDragStart(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         draggingEnabled = true
