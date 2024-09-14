@@ -1,0 +1,314 @@
+-- Criação do menu
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "MenuGui"
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 400) -- Redefinido para tamanho menor
+frame.Position = UDim2.new(0.5, -150, 0.5, -200)
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+frame.Parent = screenGui
+frame.Visible = false -- Inicia como invisível
+
+-- Criação do título com efeito RGB mais vívido
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 50)
+title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+title.Text = "PRIME CHEAT"
+title.TextColor3 = Color3.fromRGB(255, 255, 255) -- Inicialmente branco
+title.TextScaled = true
+title.TextStrokeTransparency = 0.5
+title.TextSize = 24
+title.Parent = frame
+
+-- Função para gerar uma cor RGB viva aleatória
+local function getRandomColor()
+    return Color3.fromHSV(math.random(), 1, 1) -- Usando HSV para cores mais vivas
+end
+
+-- Função para atualizar a cor do texto com efeito RGB
+local function updateTextColor()
+    while true do
+        title.TextColor3 = getRandomColor()
+        wait(0.2) -- Ajuste o intervalo para a velocidade do efeito RGB
+    end
+end
+
+-- Inicia a atualização da cor do texto
+coroutine.wrap(updateTextColor)()
+
+-- Criação do botão de abrir/fechar o menu
+local menuToggleButton = Instance.new("TextButton")
+menuToggleButton.Size = UDim2.new(0, 100, 0, 50)
+menuToggleButton.Position = UDim2.new(1, -110, 0, 10) -- Ajustado para o canto superior direito
+menuToggleButton.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
+menuToggleButton.Text = "Menu"
+menuToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+menuToggleButton.TextScaled = true
+menuToggleButton.TextStrokeTransparency = 0.5
+menuToggleButton.ZIndex = 10 -- Aumentado o ZIndex para garantir que apareça acima de outros elementos
+menuToggleButton.Parent = screenGui
+
+-- Função para alternar a visibilidade do menu
+local function toggleMenu()
+    frame.Visible = not frame.Visible
+end
+
+-- Conecta a função ao botão de abrir/fechar o menu
+menuToggleButton.MouseButton1Click:Connect(toggleMenu)
+
+-- Adiciona o código para tornar o menu arrastável
+local draggingEnabled = false
+local dragStartPos = nil
+local frameStartPos = nil
+
+local function updatePosition(input)
+    local delta = input.Position - dragStartPos
+    frame.Position = UDim2.new(
+        frameStartPos.X.Scale,
+        frameStartPos.X.Offset + delta.X,
+        frameStartPos.Y.Scale,
+        frameStartPos.Y.Offset + delta.Y
+    )
+end
+
+-- Começa o arrasto do frame quando o botão de menu é clicado
+menuToggleButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        draggingEnabled = true
+        dragStartPos = input.Position
+        frameStartPos = frame.Position
+    end
+end)
+
+-- Para o arrasto do frame quando o botão de menu é liberado
+menuToggleButton.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        draggingEnabled = false
+    end
+end)
+
+-- Atualiza a posição do frame enquanto arrasta
+menuToggleButton.InputChanged:Connect(function(input)
+    if draggingEnabled and
+        (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        updatePosition(input)
+    end
+end)
+
+frame.InputChanged:Connect(function(input)
+    if draggingEnabled and
+        (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        updatePosition(input)
+    end
+end)
+
+-- Criação do botão de toggle para ESP
+local espToggleButton = Instance.new("TextButton")
+espToggleButton.Size = UDim2.new(1, 0, 0, 50)
+espToggleButton.Position = UDim2.new(0, 0, 0, 60)
+espToggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+espToggleButton.Text = "ESP: OFF"
+espToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+espToggleButton.TextScaled = true
+espToggleButton.TextStrokeTransparency = 0.5
+espToggleButton.ZIndex = 10 -- Garantir que o botão esteja visível
+espToggleButton.Parent = frame
+
+local espEnabled = false
+
+-- Função para ativar o ESP
+local function activateESP()
+    loadstring(game:HttpGet("https://scriptblox.com/raw/Universal-Script-3d-Box-ESP-5346"))()
+end
+
+-- Função para desativar o ESP
+local function deactivateESP()
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player.Character and player.Character:FindFirstChild("Head") then
+            local esp = player.Character.Head:FindFirstChild("ESP")
+            if esp then
+                esp:Destroy()
+            end
+        end
+    end
+end
+
+-- Conecta a função ao botão de toggle para ESP
+espToggleButton.MouseButton1Click:Connect(function()
+    espEnabled = not espEnabled
+    espToggleButton.Text = espEnabled and "ESP: ON" or "ESP: OFF"
+    
+    if espEnabled then
+        activateESP()
+    else
+        deactivateESP()
+    end
+end)
+
+-- Criação do TextBox para Speedhack
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Size = UDim2.new(1, 0, 0, 30)
+speedLabel.Position = UDim2.new(0, 0, 0, 120)
+speedLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+speedLabel.Text = "Speed:"
+speedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedLabel.TextScaled = true
+speedLabel.TextStrokeTransparency = 0.5
+speedLabel.Parent = frame
+
+local speedInput = Instance.new("TextBox")
+speedInput.Size = UDim2.new(1, -20, 0, 30)
+speedInput.Position = UDim2.new(0, 10, 0, 160)
+speedInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+speedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedInput.TextScaled = true
+speedInput.PlaceholderText = "Enter speed (0-100)"
+speedInput.Text = "0"
+speedInput.Parent = frame
+
+-- Função para atualizar a velocidade do jogador
+local function updateSpeed(speed)
+    local character = game.Players.LocalPlayer.Character
+    if character and character:FindFirstChild("Humanoid") then
+        character.Humanoid.WalkSpeed = speed
+    end
+end
+
+-- Função para lidar com a entrada de texto do TextBox
+speedInput.FocusLost:Connect(function(enterPressed)
+    local speed = tonumber(speedInput.Text)
+    if speed then
+        speed = math.clamp(speed, 0, 100)
+        speedInput.Text = tostring(speed)
+        updateSpeed(speed)
+    end
+end)
+
+-- Criação do TextBox para Power Jump
+local powerJumpLabel = Instance.new("TextLabel")
+powerJumpLabel.Size = UDim2.new(1, 0, 0, 30)
+powerJumpLabel.Position = UDim2.new(0, 0, 0, 220) -- Ajustado para a nova posição
+powerJumpLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+powerJumpLabel.Text = "Power Jump:"
+powerJumpLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+powerJumpLabel.TextScaled = true
+powerJumpLabel.TextStrokeTransparency = 0.5
+powerJumpLabel.Parent = frame
+
+local powerJumpInput = Instance.new("TextBox")
+powerJumpInput.Size = UDim2.new(1, -20, 0, 30)
+powerJumpInput.Position = UDim2.new(0, 10, 0, 260) -- Ajustado para a nova posição
+powerJumpInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+powerJumpInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+powerJumpInput.TextScaled = true
+powerJumpInput.PlaceholderText = "Enter jump power (0-100)"
+powerJumpInput.Text = "0"
+powerJumpInput.Parent = frame
+
+---- Função para atualizar o poder do pulo do jogador
+local function updateJumpPower(jumpPower)
+    local character = game.Players.LocalPlayer.Character
+    if character and character:FindFirstChild("Humanoid") then
+        character.Humanoid.JumpPower = jumpPower
+    end
+end
+
+-- Função para lidar com a entrada de texto do TextBox do Power Jump
+powerJumpInput.FocusLost:Connect(function(enterPressed)
+    local jumpPower = tonumber(powerJumpInput.Text)
+    if jumpPower then
+        jumpPower = math.clamp(jumpPower, 0, 100)
+        powerJumpInput.Text = tostring(jumpPower)
+        updateJumpPower(jumpPower)
+    end
+end)
+
+-- Criação do botão de toggle para Fly
+local flyToggleButton = Instance.new("TextButton")
+flyToggleButton.Size = UDim2.new(1, 0, 0, 50)
+flyToggleButton.Position = UDim2.new(0, 0, 0, 320)
+flyToggleButton.BackgroundColor3 = Color3.fromRGB(150, 0, 150)
+flyToggleButton.Text = "Fly: OFF"
+flyToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+flyToggleButton.TextScaled = true
+flyToggleButton.TextStrokeTransparency = 0.5
+flyToggleButton.ZIndex = 10 -- Garantir que o botão esteja visível
+flyToggleButton.Parent = frame
+
+local flyEnabled = false
+
+-- Função para ativar o Fly
+local function activateFly()
+    local flyScript = Instance.new("LocalScript")
+    flyScript.Source = game:HttpGet("https://raw.githubusercontent.com/zackdoesstuff/ROBLOX-Fly-Script/main/Fly%20Script")
+    flyScript.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+end
+
+-- Função para desativar o Fly
+local function deactivateFly()
+    local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    for _, child in pairs(playerGui:GetChildren()) do
+        if child:IsA("LocalScript") and child.Source:find("Fly") then
+            child:Destroy()
+        end
+    end
+end
+
+-- Conecta a função ao botão de toggle para Fly
+flyToggleButton.MouseButton1Click:Connect(function()
+    flyEnabled = not flyEnabled
+    flyToggleButton.Text = flyEnabled and "Fly: ON" or "Fly: OFF"
+    
+    if flyEnabled then
+        activateFly()
+    else
+        deactivateFly()
+    end
+end)
+
+-- Adiciona a funcionalidade de arrastar o menu
+local draggingEnabled = false
+local dragStartPos = nil
+local frameStartPos = nil
+
+local function updatePosition(input)
+    local delta = input.Position - dragStartPos
+    frame.Position = UDim2.new(
+        frameStartPos.X.Scale,
+        frameStartPos.X.Offset + delta.X,
+        frameStartPos.Y.Scale,
+        frameStartPos.Y.Offset + delta.Y
+    )
+end
+
+-- Começa o arrasto do frame quando o botão de menu é clicado
+menuToggleButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        draggingEnabled = true
+        dragStartPos = input.Position
+        frameStartPos = frame.Position
+    end
+end)
+
+-- Para o arrasto do frame quando o botão de menu é liberado
+menuToggleButton.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        draggingEnabled = false
+    end
+end)
+
+-- Atualiza a posição do frame enquanto arrasta
+menuToggleButton.InputChanged:Connect(function(input)
+    if draggingEnabled and
+        (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        updatePosition(input)
+    end
+end)
+
+frame.InputChanged:Connect(function(input)
+    if draggingEnabled and
+        (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        updatePosition(input)
+    end
+end)
