@@ -179,7 +179,7 @@ end
 speedInput.FocusLost:Connect(function(enterPressed)
     local speed = tonumber(speedInput.Text)
     if speed then
-        speed = math.clamp(speed, 0, 100)
+        speed = math.clamp(speed, 0, 300)
         speedInput.Text = tostring(speed)
         updateSpeed(speed)
     end
@@ -218,7 +218,7 @@ end
 powerJumpInput.FocusLost:Connect(function(enterPressed)
     local jumpPower = tonumber(powerJumpInput.Text)
     if jumpPower then
-        jumpPower = math.clamp(jumpPower, 0, 100)
+        jumpPower = math.clamp(jumpPower, 0, 300)
         powerJumpInput.Text = tostring(jumpPower)
         updateJumpPower(jumpPower)
     end
