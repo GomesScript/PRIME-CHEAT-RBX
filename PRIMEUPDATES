@@ -5,8 +5,8 @@ screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 -- Criação do menu principal
 local menuFrame = Instance.new("ScrollingFrame")
-menuFrame.Size = UDim2.new(0, 250, 0, 400) -- Tamanho reduzido
-menuFrame.Position = UDim2.new(0.5, -125, 0.5, -200) -- Centralizado
+menuFrame.Size = UDim2.new(0, 250, 0, 500)
+menuFrame.Position = UDim2.new(0.5, -125, 0.5, -250)
 menuFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 menuFrame.BorderSizePixel = 0
 menuFrame.ScrollBarThickness = 8
@@ -15,14 +15,14 @@ menuFrame.Parent = screenGui
 
 -- Criação do título "PRIME CHEATS" como marca d'água
 local watermark = Instance.new("TextLabel")
-watermark.Size = UDim2.new(0, 180, 0, 40)
+watermark.Size = UDim2.new(0, 200, 0, 50)
 watermark.Position = UDim2.new(0, 10, 0, 10)
 watermark.BackgroundTransparency = 1
 watermark.Text = "PRIME CHEATS"
 watermark.TextColor3 = Color3.fromRGB(255, 255, 255)
 watermark.TextScaled = true
 watermark.TextStrokeTransparency = 0.5
-watermark.TextSize = 20
+watermark.TextSize = 24
 watermark.Parent = screenGui
 
 -- Função para gerar uma cor RGB viva aleatória
@@ -43,8 +43,8 @@ coroutine.wrap(updateWatermarkColor)()
 
 -- Criação do botão "Prime" para abrir/fechar o menu
 local primeButton = Instance.new("TextButton")
-primeButton.Size = UDim2.new(0, 80, 0, 40) -- Tamanho reduzido
-primeButton.Position = UDim2.new(1, -90, 0, 10) -- Ajustar posição
+primeButton.Size = UDim2.new(0, 80, 0, 40)
+primeButton.Position = UDim2.new(1, -90, 0, 10)
 primeButton.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
 primeButton.Text = "Prime"
 primeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -97,7 +97,6 @@ primeButton.InputChanged:Connect(function(input)
     end
 end)
 
--- Adiciona o conteúdo ao menu
 -- Criação do botão para ESP
 local espToggleButton = Instance.new("TextButton")
 espToggleButton.Size = UDim2.new(1, 0, 0, 50)
@@ -193,7 +192,6 @@ powerJumpLabel.TextScaled = true
 powerJumpLabel.TextStrokeTransparency = 0.5
 powerJumpLabel.Parent = menuFrame
 
--- Criação do TextBox para o poder do pulo
 local powerJumpInput = Instance.new("TextBox")
 powerJumpInput.Size = UDim2.new(1, -20, 0, 30)
 powerJumpInput.Position = UDim2.new(0, 10, 0, 170)
@@ -233,71 +231,99 @@ teleportButton.TextStrokeTransparency = 0.5
 teleportButton.ZIndex = 10
 teleportButton.Parent = menuFrame
 
--- Criação do Frame para listar jogadores
-local playerListFrame = Instance.new("Frame")
-playerListFrame.Size = UDim2.new(1, 0, 0, 100)
-playerListFrame.Position = UDim2.new(0, 0, 0, 270)
-playerListFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-playerListFrame.Visible = false
-playerListFrame.Parent = menuFrame
+-- Criação do TextBox para escolher o jogador para teleportar
+local playerInput = Instance.new("TextBox")
+playerInput.Size = UDim2.new(1, -20, 0, 30)
+playerInput.Position = UDim2.new(0, 10, 0, 270)
+playerInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+playerInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+playerInput.TextScaled = true
+playerInput.PlaceholderText = "Enter Player Name"
+playerInput.Text = ""
+playerInput.Parent = menuFrame
 
-local playerListLayout = Instance.new("UIListLayout")
-playerListLayout.Parent = playerListFrame
-playerListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-playerListLayout.Padding = UDim.new(0, 5)
-
+-- Função para atualizar a lista de jogadores
 local function updatePlayerList()
-    -- Limpar a lista de jogadores
-    for _, child in pairs(playerListFrame:GetChildren()) do
-        if child:IsA("TextButton") then
-            child:Destroy()
-        end
-    end
-
-    -- Adicionar jogadores à lista
+    playerInput.Text = ""
+    local playerList = {}
     for _, player in pairs(game.Players:GetPlayers()) do
-        if player ~= game.Players.LocalPlayer then
-            local playerButton = Instance.new("TextButton")
-            playerButton.Size = UDim2.new(1, -10, 0, 30)
-            playerButton.Position = UDim2.new(0, 5, 0, (playerListLayout.AbsoluteContentSize.Y + 5) % 35)
-            playerButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-            playerButton.Text = player.Name
-            playerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-            playerButton.TextScaled = true
-            playerButton.TextStrokeTransparency = 0.5
-            playerButton.Parent = playerListFrame
-
-            playerButton.MouseButton1Click:Connect(function()
-                teleportToPlayer(player.Name)
-            end)
+        if player.Name ~= game.Players.LocalPlayer.Name then
+            table.insert(playerList, player.Name)
         end
+    end
+
+    -- Criação do dropdown para a lista de jogadores
+    local dropdown = Instance.new("Frame")
+    dropdown.Size = UDim2.new(1, -20, 0, #playerList * 30)
+    dropdown.Position = UDim2.new(0, 10, 0, 310)
+    dropdown.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    dropdown.Parent = menuFrame
+
+    for i, playerName in ipairs(playerList) do
+        local playerButton = Instance.new("TextButton")
+        playerButton.Size = UDim2.new(1, 0, 0, 30)
+        playerButton.Position = UDim2.new(0, 0, (i - 1) * 30, 0)
+        playerButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        playerButton.Text = playerName
+        playerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        playerButton.TextScaled = true
+        playerButton.TextStrokeTransparency = 0.5
+        playerButton.Parent = dropdown
+
+        playerButton.MouseButton1Click:Connect(function()
+            teleportToPlayer(playerName)
+        end)
     end
 end
 
---- Função para teleportar para o jogador
-local function teleportToPlayer(playerName)
-    local player = game.Players:FindFirstChild(playerName)
-    if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        local character = game.Players.LocalPlayer.Character
-        if character and character:FindFirstChild("HumanoidRootPart") then
-            -- Move o HumanoidRootPart do jogador local para a posição do HumanoidRootPart do jogador alvo
-            character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame
-        else
-            warn("HumanoidRootPart not found in LocalPlayer's character")
-        end
-    else
-        warn("Target player or HumanoidRootPart not found")
+-- Atualiza a lista de jogadores quando o menu é aberto
+menuFrame:GetPropertyChangedSignal("Visible"):Connect(function()
+    if menuFrame.Visible then
+        updatePlayerList()
     end
-end
-
--- Atualiza a lista de jogadores e a visibilidade
-teleportButton.MouseButton1Click:Connect(function()
-    playerListFrame.Visible = not playerListFrame.Visible
-    updatePlayerList()
 end)
 
-teleportButton.MouseButton1Click:Connect(function()
-    playerListFrame.Visible = not playerListFrame.Visible
-    updatePlayerList()
+-- Criação do botão para Speedhack
+local speedhackToggleButton = Instance.new("TextButton")
+speedhackToggleButton.Size = UDim2.new(1, 0, 0, 50)
+speedhackToggleButton.Position = UDim2.new(0, 0, 0, 370)
+speedhackToggleButton.BackgroundColor3 = Color3.fromRGB(150, 150, 0)
+speedhackToggleButton.Text = "Speedhack: OFF"
+speedhackToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedhackToggleButton.TextScaled = true
+speedhackToggleButton.TextStrokeTransparency = 0.5
+speedhackToggleButton.ZIndex = 10
+speedhackToggleButton.Parent = menuFrame
+
+local speedhackEnabled = false
+local originalWalkSpeed = 16  -- Valor padrão de velocidade do jogador
+
+-- Função para ativar o Speedhack
+local function activateSpeedhack()
+    local character = game.Players.LocalPlayer.Character
+    if character and character:FindFirstChild("Humanoid") then
+        originalWalkSpeed = character.Humanoid.WalkSpeed
+        character.Humanoid.WalkSpeed = 50  -- Ajuste a velocidade conforme necessário
+    end
+end
+
+-- Função para desativar o Speedhack
+local function deactivateSpeedhack()
+    local character = game.Players.LocalPlayer.Character
+    if character and character:FindFirstChild("Humanoid") then
+        character.Humanoid.WalkSpeed = originalWalkSpeed
+    end
+end
+
+-- Conecta a função ao botão de toggle para Speedhack
+speedhackToggleButton.MouseButton1Click:Connect(function()
+    speedhackEnabled = not speedhackEnabled
+    speedhackToggleButton.Text = speedhackEnabled and "Speedhack: ON" or "Speedhack: OFF"
+    
+    if speedhackEnabled then
+        activateSpeedhack()
+    else
+        deactivateSpeedhack()
+    end
 end)
 
