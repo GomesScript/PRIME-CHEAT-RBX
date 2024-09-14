@@ -4,8 +4,8 @@ screenGui.Name = "MenuGui"
 screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 400) -- Redefinido para tamanho menor
-frame.Position = UDim2.new(0.5, -150, 0.5, -200)
+frame.Size = UDim2.new(0, 300, 0, 550) -- Redefinido para tamanho maior
+frame.Position = UDim2.new(0.5, -150, 0.5, -275)
 frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 frame.Parent = screenGui
 frame.Visible = false -- Inicia como invisível
@@ -327,3 +327,38 @@ tpCloseButton.MouseButton1Click:Connect(function()
     tpFrame.Visible = false
 end)
 
+-- Criação do botão de toggle para Noclip
+local noclipButton = Instance.new("TextButton")
+noclipButton.Size = UDim2.new(1, 0, 0, 50)
+noclipButton.Position = UDim2.new(0, 0, 0, 380)
+noclipButton.BackgroundColor3 = Color3.fromRGB(150, 0, 150)
+noclipButton.Text = "Noclip: OFF"
+noclipButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+noclipButton.TextScaled = true
+noclipButton.TextStrokeTransparency = 0.5
+noclipButton.ZIndex = 10 -- Garantir que o botão esteja visível
+noclipButton.Parent = frame
+
+local noclipEnabled = false
+
+-- Função para ativar ou desativar Noclip
+local function toggleNoclip()
+    noclipEnabled = not noclipEnabled
+    noclipButton.Text = noclipEnabled and "Noclip: ON" or "Noclip: OFF"
+    
+    local character = game.Players.LocalPlayer.Character
+    if character and character:FindFirstChild("Humanoid") then
+        if noclipEnabled then
+            -- Ativa o noclip
+            character.Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+        else
+            -- Desativa o noclip
+            character.Humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+        end
+    end
+end
+
+-- Conecta a função ao botão de toggle para Noclip
+noclipButton.MouseButton1Click:Connect(toggleNoclip)
+
+    local character = game.Players.LocalPlayer.Character
